@@ -11,6 +11,19 @@ public struct UserSetPoolerObject
 
 public class MonoObjectPooler : MonoBehaviour
 {
+    //#todo: 생성자 개선, 오브젝트 추가할 수 있는 함수 제작하기
+    public MonoObjectPooler(String pName)
+    {
+        GameObject obj = new GameObject(pName);
+        obj.AddComponent<MonoObjectPooler>();
+    }
+    public MonoObjectPooler(String pName, Transform pParent)
+    {
+        GameObject obj = new GameObject(pName);
+        obj.transform.parent = pParent;
+        obj.AddComponent<MonoObjectPooler>();
+    }
+
     [SerializeField] private UserSetPoolerObject[] _userSetPools;
     private Queue<MonoPooledObject>[] _pools;
     private Dictionary<String, Int32> _poolKeyFinder = new Dictionary<String, Int32>();
@@ -59,6 +72,7 @@ public class MonoObjectPooler : MonoBehaviour
         {
             MonoPooledObject obj = _pools[i].Dequeue();
             obj.gameObject.SetActive(true);
+            obj.SpawnObject();
             return obj;
         }
         catch (Exception e)

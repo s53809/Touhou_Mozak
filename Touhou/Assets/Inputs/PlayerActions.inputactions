@@ -2,7 +2,7 @@
     "name": "PlayerActions",
     "maps": [
         {
-            "name": "PlayerActions",
+            "name": "PlayerControl",
             "id": "56b4d7f2-6a38-41e5-a346-07adb7835e4d",
             "actions": [
                 {
@@ -13,6 +13,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Concentration",
+                    "type": "Button",
+                    "id": "07699a48-50bd-406c-9430-08893cafb242",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -125,6 +134,17 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "376235f3-fa0a-4413-8cf7-b1d95dde3720",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";PC",
+                    "action": "Concentration",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
