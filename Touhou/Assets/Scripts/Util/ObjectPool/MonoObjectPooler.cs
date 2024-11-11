@@ -21,7 +21,7 @@ public class MonoObjectPooler : MonoBehaviour
         for (Int32 i = 0; i < pool.poolCount; i++)
         {
             MonoPooledObject obj = Instantiate(pool.monoPooledObject);
-            //#todo : 자식 객체들 부모 오브젝트로 그룹화시키기
+            obj.transform.SetParent(transform.GetChild(index));
             obj.gameObject.SetActive(false);
             obj.DestroyEvent += OnDestroyPooledObject;
             obj.poolingKey = index;
@@ -36,6 +36,7 @@ public class MonoObjectPooler : MonoBehaviour
             var pool = _userSetPools[i];
             _poolKeyFinder.Add(pool.monoPooledObject.name, i);
             _pools[i] = new Queue<MonoPooledObject>(pool.poolCount);
+            new GameObject(_userSetPools[i].monoPooledObject.name).transform.SetParent(transform);
             InputPoolsToQueue(i);
         }
     }

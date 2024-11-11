@@ -23,9 +23,6 @@ public class EntityMoveController : MonoBehaviour
             0));
 
         if (Input.GetMouseButtonDown(0))
-        {
-            Debug.Log("TEST");
             bulletShooter.SpawnPoolObject("Bullet").transform.position = transform.position;
-        }
     }
 }
