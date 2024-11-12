@@ -44,6 +44,15 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Shoot"",
+                    ""type"": ""Button"",
+                    ""id"": ""ae560930-323a-4c95-b375-5fa1eeb15bb5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -167,6 +176,28 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
                     ""action"": ""Concentration"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""677d3e92-ed4e-4bef-a732-0fe39fc6b5a9"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";PC"",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""799a2f51-9b6e-4c72-9da7-682260cd09f1"",
+                    ""path"": ""<Keyboard>/j"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -194,6 +225,7 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
         m_PlayerControl = asset.FindActionMap("PlayerControl", throwIfNotFound: true);
         m_PlayerControl_Move = m_PlayerControl.FindAction("Move", throwIfNotFound: true);
         m_PlayerControl_Concentration = m_PlayerControl.FindAction("Concentration", throwIfNotFound: true);
+        m_PlayerControl_Shoot = m_PlayerControl.FindAction("Shoot", throwIfNotFound: true);
     }
 
     ~@PlayerActions()
@@ -262,12 +294,14 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
     private List<IPlayerControlActions> m_PlayerControlActionsCallbackInterfaces = new List<IPlayerControlActions>();
     private readonly InputAction m_PlayerControl_Move;
     private readonly InputAction m_PlayerControl_Concentration;
+    private readonly InputAction m_PlayerControl_Shoot;
     public struct PlayerControlActions
     {
         private @PlayerActions m_Wrapper;
         public PlayerControlActions(@PlayerActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_PlayerControl_Move;
         public InputAction @Concentration => m_Wrapper.m_PlayerControl_Concentration;
+        public InputAction @Shoot => m_Wrapper.m_PlayerControl_Shoot;
         public InputActionMap Get() { return m_Wrapper.m_PlayerControl; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -283,6 +317,9 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
             @Concentration.started += instance.OnConcentration;
             @Concentration.performed += instance.OnConcentration;
             @Concentration.canceled += instance.OnConcentration;
+            @Shoot.started += instance.OnShoot;
+            @Shoot.performed += instance.OnShoot;
+            @Shoot.canceled += instance.OnShoot;
         }
 
         private void UnregisterCallbacks(IPlayerControlActions instance)
@@ -293,6 +330,9 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
             @Concentration.started -= instance.OnConcentration;
             @Concentration.performed -= instance.OnConcentration;
             @Concentration.canceled -= instance.OnConcentration;
+            @Shoot.started -= instance.OnShoot;
+            @Shoot.performed -= instance.OnShoot;
+            @Shoot.canceled -= instance.OnShoot;
         }
 
         public void RemoveCallbacks(IPlayerControlActions instance)
@@ -323,5 +363,6 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnConcentration(InputAction.CallbackContext context);
+        void OnShoot(InputAction.CallbackContext context);
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
@@ -7,6 +8,12 @@ public struct UserSetPoolerObject
 {
     public MonoPooledObject monoPooledObject;
     public Int32 poolCount;
+
+    public UserSetPoolerObject(MonoPooledObject pObj, Int32 poolCount)
+    {
+        monoPooledObject = pObj;
+        this.poolCount = poolCount;
+    }
 }
 
 public class MonoObjectPooler : MonoBehaviour
@@ -25,8 +32,8 @@ public class MonoObjectPooler : MonoBehaviour
     }
 
     [SerializeField] private UserSetPoolerObject[] _userSetPools;
-    private Queue<MonoPooledObject>[] _pools;
-    private Dictionary<String, Int32> _poolKeyFinder = new Dictionary<String, Int32>();
+    private List<Queue<MonoPooledObject>> _pools;
+    private Dictionary<String, Int32> _poolKeyFinder;
 
     private void InputPoolsToQueue(Int32 index)
     {
@@ -41,17 +48,41 @@ public class MonoObjectPooler : MonoBehaviour
             _pools[index].Enqueue(obj);
         }
     }
-    private void Start()
+    private void InputPoolsToQueue(MonoPooledObject pObj, Int32 size, Int32 index)
     {
-        _pools = new Queue<MonoPooledObject>[_userSetPools.Length];
+        UserSetPoolerObject pool = new UserSetPoolerObject(pObj, size);
+        for (Int32 i = 0; i < pool.poolCount; i++)
+        {
+            MonoPooledObject obj = Instantiate(pool.monoPooledObject);
+            obj.transform.SetParent(transform.GetChild(index));
+            obj.gameObject.SetActive(false);
+            obj.DestroyEvent += OnDestroyPooledObject;
+            obj.poolingKey = index;
+            _pools[index].Enqueue(obj);
+        }
+    }
+    private void Awake()
+    {
+        _poolKeyFinder = new Dictionary<String, Int32>();
+        _pools = new List<Queue<MonoPooledObject>>(new Queue<MonoPooledObject>[_userSetPools.Length]);
         for (Int32 i = 0; i < _userSetPools.Length; i++) 
         {
             var pool = _userSetPools[i];
             _poolKeyFinder.Add(pool.monoPooledObject.name, i);
-            _pools[i] = new Queue<MonoPooledObject>(pool.poolCount);
+            _pools[i] = new Queue<MonoPooledObject>();
             new GameObject(_userSetPools[i].monoPooledObject.name).transform.SetParent(transform);
             InputPoolsToQueue(i);
         }
+    }
+
+    public void AddMonoObject(MonoPooledObject obj, Int32 size)
+    {
+        Int32 index = _pools.Count;
+        _poolKeyFinder.Add(obj.name, index);
+        _pools.Add(new Queue<MonoPooledObject>());
+        new GameObject(obj.name).transform.SetParent(transform);
+        Debug.Log(obj.name);
+        InputPoolsToQueue(obj, size, index);
     }
 
     private void OnDestroyPooledObject(MonoPooledObject pObj, Int32 key)
