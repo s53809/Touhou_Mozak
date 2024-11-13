@@ -200,6 +200,76 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""MainTitle"",
+            ""id"": ""a5b15b72-0354-4525-ab7f-a1a83f7d8efc"",
+            ""actions"": [
+                {
+                    ""name"": ""Up"",
+                    ""type"": ""Button"",
+                    ""id"": ""860b7478-b67d-43b5-bb7f-70175e84623e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Down"",
+                    ""type"": ""Button"",
+                    ""id"": ""f2053231-cc4a-49d3-a3a0-072a960bcf81"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""37389cbb-81a0-4c2f-873d-86e8b72c1aa1"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Up"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d8ba5e5c-1f5c-41ce-b355-89ff83bddb14"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Up"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3eaa2976-2a27-4605-991c-664350c29020"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Down"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cc80016c-753e-421b-b44d-7fddb6304e9f"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Down"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -226,11 +296,16 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
         m_PlayerControl_Move = m_PlayerControl.FindAction("Move", throwIfNotFound: true);
         m_PlayerControl_Concentration = m_PlayerControl.FindAction("Concentration", throwIfNotFound: true);
         m_PlayerControl_Shoot = m_PlayerControl.FindAction("Shoot", throwIfNotFound: true);
+        // MainTitle
+        m_MainTitle = asset.FindActionMap("MainTitle", throwIfNotFound: true);
+        m_MainTitle_Up = m_MainTitle.FindAction("Up", throwIfNotFound: true);
+        m_MainTitle_Down = m_MainTitle.FindAction("Down", throwIfNotFound: true);
     }
 
     ~@PlayerActions()
     {
         UnityEngine.Debug.Assert(!m_PlayerControl.enabled, "This will cause a leak and performance issues, PlayerActions.PlayerControl.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_MainTitle.enabled, "This will cause a leak and performance issues, PlayerActions.MainTitle.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -350,6 +425,60 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
         }
     }
     public PlayerControlActions @PlayerControl => new PlayerControlActions(this);
+
+    // MainTitle
+    private readonly InputActionMap m_MainTitle;
+    private List<IMainTitleActions> m_MainTitleActionsCallbackInterfaces = new List<IMainTitleActions>();
+    private readonly InputAction m_MainTitle_Up;
+    private readonly InputAction m_MainTitle_Down;
+    public struct MainTitleActions
+    {
+        private @PlayerActions m_Wrapper;
+        public MainTitleActions(@PlayerActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Up => m_Wrapper.m_MainTitle_Up;
+        public InputAction @Down => m_Wrapper.m_MainTitle_Down;
+        public InputActionMap Get() { return m_Wrapper.m_MainTitle; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MainTitleActions set) { return set.Get(); }
+        public void AddCallbacks(IMainTitleActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MainTitleActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MainTitleActionsCallbackInterfaces.Add(instance);
+            @Up.started += instance.OnUp;
+            @Up.performed += instance.OnUp;
+            @Up.canceled += instance.OnUp;
+            @Down.started += instance.OnDown;
+            @Down.performed += instance.OnDown;
+            @Down.canceled += instance.OnDown;
+        }
+
+        private void UnregisterCallbacks(IMainTitleActions instance)
+        {
+            @Up.started -= instance.OnUp;
+            @Up.performed -= instance.OnUp;
+            @Up.canceled -= instance.OnUp;
+            @Down.started -= instance.OnDown;
+            @Down.performed -= instance.OnDown;
+            @Down.canceled -= instance.OnDown;
+        }
+
+        public void RemoveCallbacks(IMainTitleActions instance)
+        {
+            if (m_Wrapper.m_MainTitleActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IMainTitleActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MainTitleActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MainTitleActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public MainTitleActions @MainTitle => new MainTitleActions(this);
     private int m_PCSchemeIndex = -1;
     public InputControlScheme PCScheme
     {
@@ -364,5 +493,10 @@ public partial class @PlayerActions: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnConcentration(InputAction.CallbackContext context);
         void OnShoot(InputAction.CallbackContext context);
+    }
+    public interface IMainTitleActions
+    {
+        void OnUp(InputAction.CallbackContext context);
+        void OnDown(InputAction.CallbackContext context);
     }
 }
