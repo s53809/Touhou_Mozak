@@ -53,6 +53,7 @@ public class ModeSelectsPresenter : PresenterBase<ModeSelectsView>
 
         for (Int32 i = 0; i < _childTexts.Length; i++) _childTexts[i].color = Color.gray;
         _view.Start.color = Color.white;
+        OnDescription(SelectedStage);
 
         StartCoroutine(MoveCoroutine());
 
@@ -77,12 +78,22 @@ public class ModeSelectsPresenter : PresenterBase<ModeSelectsView>
         if (SelectedStage == 0) SelectedStage = 7;
         else SelectedStage--;
         MarkButtonSelect(SelectedStage);
+        OnDescription(SelectedStage);
     }
 
     public void PlayerInputDown(InputAction.CallbackContext context)
     {
         SelectedStage = (SelectedStage + 1) % 8;
         MarkButtonSelect(SelectedStage);
+        OnDescription(SelectedStage);
+    }
+
+    private void OnDescription(Int32 index)
+    {
+        _view.Description.rectTransform.DOPause();
+        _view.Description.text = _descs[index];
+        _view.Description.rectTransform.anchoredPosition = new Vector3(-245, -70, 0);
+        _view.Description.rectTransform.DOAnchorPosY(-20, 0.5f);
     }
     IEnumerator MoveCoroutine()
     {
