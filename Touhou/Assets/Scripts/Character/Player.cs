@@ -13,35 +13,17 @@ public class Player : MonoBehaviour
     private Rigidbody2D _rigid;
     private PlayerActions _playerInput;
     private PlayerTanmakManager _playerTanmakManager;
+    private ITanmakLoader _tanmakInfo;
 
     /* All Public or Public getter only */
     public Single defaultPlayerSpeed = 1.0f;
 
     private void Awake()
     {
+        _tanmakInfo = new ReimuTanmakLoader(NLuaEnv.Ins);
+
         _rigid = GetComponent<Rigidbody2D>();
-        _playerTanmakManager = new PlayerTanmakManager(_pooler, transform, new TanmakLevelInfo[][]
-        {
-            new TanmakLevelInfo[] {
-                new TanmakLevelInfo("ReimuDefaultTanmak", 1, 0.1f
-                , new Vector2[]{new Vector2(0, 0.8f)}
-                , new Vector2[]{Vector2.up })
-            },
-            new TanmakLevelInfo[] {
-                new TanmakLevelInfo("ReimuDefaultTanmak", 2, 0.1f
-                , new Vector2[]{new Vector2(-0.2f, 0.8f), new Vector2(0.2f, 0.8f)}
-                , new Vector2[]{Vector2.up, Vector2.up })
-            },
-            new TanmakLevelInfo[] {
-                new TanmakLevelInfo("ReimuDefaultTanmak", 3, 0.1f
-                , new Vector2[]{new Vector2(-0.4f, 0.8f), new Vector2(0, 0.8f), new Vector2(0.4f, 0.8f)}
-                , new Vector2[]{Vector2.up, Vector2.up, Vector2.up })
-                , new TanmakLevelInfo("ReimuFollowTanmak", 2, 0.4f
-                , new Vector2[]{new Vector2(-0.5f, 0), new Vector2(0.5f, 0)}
-                , new Vector2[]{Vector2Util.RotateVector(Vector2.up, 45),
-                    Vector2Util.RotateVector(Vector2.up, -45) })
-            }
-        });
+        _playerTanmakManager = new PlayerTanmakManager(_pooler, transform, _tanmakInfo.GetTanmakLevel());
         
         _playerInput = new PlayerActions();
         _playerInput.Enable();
