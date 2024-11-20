@@ -61,4 +61,14 @@ public class Player : MonoBehaviour
         Boolean isPressed = context.IsPressed();
         if (isPressed) _playerTanmakManager.OnShoot();
     }
+
+    [InspectorButton("Reload Environment")]
+    private void ReloadTanmak()
+    {
+        NLuaEnv.Ins.Reload();
+        int curLevel = _playerTanmakManager.PlayerLevel;
+        _tanmakInfo = new ReimuTanmakLoader(NLuaEnv.Ins);
+        _playerTanmakManager = new PlayerTanmakManager(_pooler, transform, _tanmakInfo.GetTanmakLevel());
+        _playerTanmakManager.SetLevel(curLevel);
+    }
 }

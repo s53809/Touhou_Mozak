@@ -42,7 +42,7 @@ public class PlayerTanmakManager
     }
     public void SetLevel(Int32 level)
     {
-        if (level >= _levelInfo.Length - 1) throw new Exception("Level is out of Range");
+        if (level > _levelInfo.Length - 1) throw new Exception("Level is out of Range");
         PlayerLevel = level;
     }
     public void OnShoot()
