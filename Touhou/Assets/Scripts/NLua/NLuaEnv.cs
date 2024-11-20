@@ -13,6 +13,8 @@ public class NLuaEnv : MonoSingleton<NLuaEnv>, IScriptEnv
         m_lua.State.Encoding = Encoding.UTF8;
         m_lua.LoadCLRPackage();
         m_lua.DoString(@"import ('UnityEngine')");
+        m_lua.DoString(@"import ('Assembly-CSharp')");
+        m_lua.DoString(@"import ('Assembly-CSharp', 'MinseoUtil')");
 
         Reload();
     }
